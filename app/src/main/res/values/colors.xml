@@ -1,0 +1,20 @@
+<resources>
+    <color name="screen_background">#F3F6F4</color>
+    <color name="surface">#FBFCFB</color>
+    <color name="surface_alt">#EAF1EF</color>
+    <color name="surface_soft">#F2F7F5</color>
+    <color name="border">#E7EEEB</color>
+    <color name="primary">#5A8882</color>
+    <color name="primary_dark">#385F5B</color>
+    <color name="primary_soft">#DDEBE7</color>
+    <color name="text_primary">#243230</color>
+    <color name="text_secondary">#667573</color>
+    <color name="warning">#B8741A</color>
+    <color name="warning_soft">#F5E6D1</color>
+    <color name="success">#2E7D5B</color>
+    <color name="success_soft">#D9EEE3</color>
+    <color name="error">#B05555</color>
+    <color name="error_soft">#F4DEDE</color>
+    <color name="white">#FFFFFF</color>
+    <color name="overlay_scrim">#26000000</color>
+</resources>
