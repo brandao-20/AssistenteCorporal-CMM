@@ -29,12 +29,14 @@ class PoseAnalyzer(
             return
         }
 
+        val frameWidth = imageProxy.width
+        val frameHeight = imageProxy.height
         val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
         val isFrontCamera = lensFacingProvider() == CameraSelector.LENS_FACING_FRONT
 
         poseDetector.process(image)
             .addOnSuccessListener { pose ->
-                onResult(feedbackEngine.evaluate(pose, isFrontCamera))
+                onResult(feedbackEngine.evaluate(pose, isFrontCamera, frameWidth, frameHeight))
             }
             .addOnFailureListener { exception ->
                 onFailure(exception.message ?: "Falha ao analisar a pose.")

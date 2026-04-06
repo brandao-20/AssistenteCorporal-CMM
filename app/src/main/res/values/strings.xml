@@ -85,6 +85,8 @@ Esta versão foi pensada para ser simples, demonstrável e coerente com os requi
     <string name="depth_value">%1$d%%</string>
 
     <string name="state_waiting">À espera</string>
+    <string name="state_waiting_human">À espera de corpo humano</string>
+    <string name="state_stabilizing">A estabilizar deteção</string>
     <string name="state_permission_needed">Permissão necessária</string>
     <string name="state_camera_error">Erro de câmara</string>
     <string name="state_phone_tilted">Telemóvel inclinado</string>

@@ -1,0 +1,44 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+
+# Local configuration
+local.properties
+
+# Gradle
+.gradle/
+build/
+
+# Module build folders
+*/build/
+app/build/
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+
+# Generated captures / logs
+captures/
+outputs/
+*.log
+
+# Keystores / signing
+*.jks
+*.keystore
+
+# APK / AAB
+*.apk
+*.aab
+
+# Native / CMake
+.cxx/
+.externalNativeBuild/
+
+# Kotlin / Java crash dumps
+hs_err_pid*
+replay_pid*
+
+# Temporary files
+*.tmp
+*.swp
+*.swo

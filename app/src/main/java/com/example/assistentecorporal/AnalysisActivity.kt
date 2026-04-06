@@ -294,11 +294,7 @@ class AnalysisActivity : AppCompatActivity() {
         binding.progressDepth.progress = result.depthPercent
         applyStageChipStyle(result.stageLabel, result.justCompletedRep)
 
-        binding.tvAppStatus.text = if (result.poseDetected) {
-            getString(R.string.pose_detected_ok)
-        } else {
-            getString(R.string.pose_not_detected)
-        }
+        binding.tvAppStatus.text = result.appStatus
 
         if (result.justCompletedRep) {
             celebrateCompletedRep()
@@ -344,8 +340,13 @@ class AnalysisActivity : AppCompatActivity() {
             }
 
             result?.poseDetected == false -> {
+                val stateText = when {
+                    result.appStatus.contains("estabilizar", ignoreCase = true) -> getString(R.string.state_stabilizing)
+                    result.appStatus.contains("humano", ignoreCase = true) -> getString(R.string.state_waiting_human)
+                    else -> getString(R.string.state_body_incomplete)
+                }
                 updateStateChip(
-                    stateText = getString(R.string.state_body_incomplete),
+                    stateText = stateText,
                     backgroundRes = R.drawable.bg_state_error,
                     textColorRes = R.color.error
                 )
