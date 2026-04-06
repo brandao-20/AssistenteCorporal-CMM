@@ -5,6 +5,7 @@ Aplicação Android desenvolvida em **Kotlin** no âmbito da unidade curricular 
 ## Objetivo
 
 A aplicação foi concebida para ajudar o utilizador a:
+
 - posicionar corretamente o telemóvel;
 - manter o corpo visível em perfil lateral;
 - verificar se a orientação do dispositivo é adequada;
@@ -21,10 +22,10 @@ A aplicação integra os elementos obrigatórios pedidos no trabalho prático:
 
 - **1 sensor do dispositivo**: Rotation Vector
 - **2 use cases do CameraX**:
-    - Preview
-    - ImageAnalysis
+  - Preview
+  - ImageAnalysis
 - **1 API do ML Kit**:
-    - Pose Detection
+  - Pose Detection
 - **Ecrã inicial explicativo**
 - **Área de aplicação com justificação**
 - **Repositório Git**
@@ -36,7 +37,7 @@ A aplicação integra os elementos obrigatórios pedidos no trabalho prático:
 
 - introdução inicial em mini-slides;
 - análise em **vista lateral**;
-- preview da câmara em tempo real;
+- imagem da câmara em tempo real;
 - alternância entre **câmara traseira** e **câmara frontal**;
 - deteção da pose com ML Kit;
 - guia visual de enquadramento corporal;
@@ -45,12 +46,15 @@ A aplicação integra os elementos obrigatórios pedidos no trabalho prático:
 - cálculo do ângulo principal do joelho;
 - barra de profundidade;
 - contagem de repetições;
-- presets rápidos:
-    - Permissivo
-    - Normal
-    - Exigente
-- ajuste manual de thresholds;
-- persistência local de preferências.
+- **modos rápidos**:
+  - Permissivo
+  - Normal
+  - Exigente
+- ajuste manual de **limiares**;
+- persistência local de preferências;
+- bloqueio funcional da análise quando **não existe corpo humano válido**;
+- redução de falsos positivos em objetos não humanos;
+- suavização da análise para maior estabilidade visual.
 
 ---
 
@@ -82,7 +86,10 @@ app/
     ├─ res/layout/
     │  ├─ activity_main.xml
     │  └─ activity_analysis.xml
-    └─ res/values/
-       ├─ strings.xml
-       ├─ colors.xml
-       └─ themes.xml
+    └─ res/
+       ├─ drawable/
+       ├─ mipmap/
+       └─ values/
+          ├─ strings.xml
+          ├─ colors.xml
+          └─ themes.xml
