@@ -28,34 +28,63 @@
             android:textColor="@color/text_primary"
             android:textStyle="bold" />
 
-        <Button
+        <LinearLayout
             android:id="@+id/btnSwitchCamera"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="12dp"
             android:layout_weight="1"
             android:background="@drawable/bg_primary_button"
-            android:drawablePadding="10dp"
-            android:drawableStart="@android:drawable/ic_menu_camera"
-            android:drawableTint="@color/surface"
+            android:clickable="true"
             android:elevation="0dp"
-            android:stateListAnimator="@null"
-            android:text="@string/switch_to_front"
-            android:textAllCaps="false"
-            android:textColor="@color/surface"
-            android:textStyle="bold" />
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:minHeight="50dp"
+            android:orientation="horizontal"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:stateListAnimator="@null">
 
-        <ImageButton
+            <ImageView
+                android:id="@+id/ivSwitchCameraIcon"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_switch_camera_clean"
+                android:tint="@color/surface" />
+
+            <TextView
+                android:id="@+id/tvSwitchCameraLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/switch_to_front"
+                android:textColor="@color/surface"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <FrameLayout
             android:id="@+id/btnInfo"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginStart="12dp"
             android:background="@drawable/bg_soft_button"
+            android:clickable="true"
             android:contentDescription="@string/info"
             android:elevation="0dp"
-            android:padding="12dp"
-            android:src="@android:drawable/ic_dialog_info"
-            android:tint="@color/primary_dark" />
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:stateListAnimator="@null">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_info_outline_clean"
+                android:tint="@color/primary_dark" />
+        </FrameLayout>
     </LinearLayout>
 
     <FrameLayout

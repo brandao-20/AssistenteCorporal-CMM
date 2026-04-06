@@ -6,9 +6,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@android:drawable/ic_menu_camera"
+        android:icon="@drawable/ic_assistente_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@android:drawable/ic_menu_camera"
+        android:roundIcon="@drawable/ic_assistente_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.AssistenteCorporal">
         <activity

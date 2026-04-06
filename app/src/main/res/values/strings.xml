@@ -1,50 +1,56 @@
 <resources>
     <string name="app_name">Assistente corporal</string>
-    <string name="main_goal">App Android individual para apoio ao enquadramento corporal e análise básica de agachamentos em vista lateral.</string>
-    <string name="main_features">Funcionalidades:
-• ecrã inicial explicativo;
-• uso do sensor Rotation Vector para verificar se o telemóvel está alinhado;
-• CameraX com Preview e ImageAnalysis;
-• ML Kit Pose Detection para estimar a pose em tempo real;
-• feedback textual simples sobre profundidade e conclusão do agachamento;
-• alternância entre câmara traseira e frontal;
-• thresholds ajustáveis por botões.</string>
-    <string name="main_instructions">Instruções de uso:
-1. Coloca a pessoa de perfil para a câmara.
-2. Mantém o corpo inteiro visível.
-3. Verifica no ecrã se o telemóvel está alinhado.
-4. Faz o agachamento.
-5. Ajusta os thresholds se quiseres tornar a contagem mais exigente ou mais permissiva.
-
-Nota: esta app é um apoio experimental e não substitui avaliação profissional.</string>
 
     <string name="start_analysis">Iniciar análise</string>
     <string name="open_analysis_direct">Abrir análise</string>
     <string name="camera_permission_required">A permissão da câmara é obrigatória para iniciar a análise.</string>
-    <string name="analysis_idle">Análise pronta a iniciar.</string>
-    <string name="analysis_running">A analisar em tempo real.</string>
     <string name="camera_start_error">Não foi possível iniciar a câmara.</string>
-    <string name="feedback_ready">Posiciona-te de perfil e mantém o corpo inteiro visível.</string>
+
+    <string name="analysis_idle">Análise pronta a iniciar.</string>
+    <string name="analysis_waiting_human">À espera de corpo humano válido.</string>
+    <string name="analysis_stabilizing">A estabilizar a deteção humana.</string>
+    <string name="analysis_human_detected">Corpo humano válido detetado.</string>
+    <string name="analysis_running">A analisar em tempo real.</string>
+
+    <string name="feedback_camera_permission_required">Concede acesso à câmara para começar a análise.</string>
+    <string name="feedback_camera_start_error">Fecha e volta a abrir a análise para tentar novamente.</string>
+    <string name="feedback_waiting_human">Mostra uma pessoa real, com o corpo inteiro de perfil, para iniciar a análise.</string>
+    <string name="feedback_stabilizing">Mantém-te imóvel por um momento para estabilizar a análise.</string>
+    <string name="feedback_ready">Posição pronta. Inicia o agachamento de perfil.</string>
+    <string name="feedback_descending">Desce mais para atingir a profundidade pretendida.</string>
+    <string name="feedback_bottom">Boa profundidade. Agora sobe para completar.</string>
+    <string name="feedback_rising">Sobe para completar o agachamento.</string>
+    <string name="feedback_rep_completed">Repetição válida. Excelente controlo.</string>
+
     <string name="orientation_initial">Rotação lateral: à espera do sensor.</string>
     <string name="orientation_unavailable">Rotação lateral: Rotation Vector indisponível.</string>
     <string name="orientation_value">Rotação lateral: %1$dº • %2$s</string>
     <string name="visible_side_initial">Lado visível: à espera.</string>
     <string name="visible_side_value">Lado visível: %1$s</string>
+    <string name="visible_side_unknown">Indefinido</string>
+    <string name="side_left">Esquerdo</string>
+    <string name="side_right">Direito</string>
+
+    <string name="stage_waiting">À espera</string>
     <string name="stage_ready">Pronto</string>
     <string name="stage_descending">A descer</string>
     <string name="stage_bottom">Em baixo</string>
     <string name="stage_rising">A subir</string>
+
     <string name="counter_initial">Repetições: 0</string>
     <string name="counter_value">Repetições: %1$d</string>
-    <string name="threshold_title">Thresholds do agachamento</string>
-    <string name="down_threshold_label">Threshold down</string>
-    <string name="up_threshold_label">Threshold up</string>
+
+    <string name="threshold_title">Limiares do agachamento</string>
+    <string name="down_threshold_label">Limiar de descida</string>
+    <string name="up_threshold_label">Limiar de subida</string>
     <string name="threshold_value">%1$dº</string>
     <string name="reset_counter">Repor contador</string>
+
     <string name="switch_to_front">Câmara frontal</string>
     <string name="switch_to_back">Câmara traseira</string>
     <string name="back">Voltar</string>
     <string name="info">Informação</string>
+
     <string name="pose_detected_ok">Pose detetada.</string>
     <string name="pose_not_detected">Pose não detetada.</string>
     <string name="slide_indicator">%1$d/%2$d</string>
@@ -56,26 +62,28 @@ Nota: esta app é um apoio experimental e não substitui avaliação profissiona
     <string name="intro_slide_1_body">App Android individual para apoio ao enquadramento corporal e análise básica de agachamentos em vista lateral.
 
 Esta versão foi pensada para ser simples, demonstrável e coerente com os requisitos da UC.</string>
+
     <string name="intro_slide_2_label">Funcionalidades</string>
     <string name="intro_slide_2_title">O que a app faz</string>
     <string name="intro_slide_2_item_1">Usa o sensor Rotation Vector para verificar se o telemóvel está alinhado.</string>
     <string name="intro_slide_2_item_2">Usa CameraX com Preview e ImageAnalysis.</string>
     <string name="intro_slide_2_item_3">Usa ML Kit Pose Detection para estimar a pose em tempo real.</string>
-    <string name="intro_slide_2_item_4">Dá feedback textual simples sobre profundidade e conclusão do agachamento.</string>
+    <string name="intro_slide_2_item_4">Apresenta feedback textual simples sobre profundidade e conclusão do agachamento.</string>
     <string name="intro_slide_2_item_5">Permite alternar entre câmara traseira e frontal.</string>
-    <string name="intro_slide_2_item_6">Permite ajustar thresholds por botões.</string>
+    <string name="intro_slide_2_item_6">Permite ajustar os limiares através de botões.</string>
+
     <string name="intro_slide_3_label">Utilização</string>
     <string name="intro_slide_3_title">Como usar</string>
     <string name="intro_slide_3_step_1">Coloca a pessoa de perfil para a câmara.</string>
     <string name="intro_slide_3_step_2">Mantém o corpo inteiro visível no ecrã.</string>
     <string name="intro_slide_3_step_3">Verifica se o telemóvel está alinhado.</string>
     <string name="intro_slide_3_step_4">Faz o agachamento.</string>
-    <string name="intro_slide_3_step_5">Ajusta os thresholds se quiseres tornar a contagem mais exigente ou permissiva.</string>
+    <string name="intro_slide_3_step_5">Ajusta os limiares se quiseres tornar a contagem mais exigente ou mais permissiva.</string>
     <string name="intro_slide_3_note">Nota: esta app é um apoio experimental e não substitui avaliação profissional.</string>
 
     <string name="analysis_status_title">Estado da análise</string>
     <string name="analysis_metrics_title">Leitura atual</string>
-    <string name="preview_content_description">Preview da câmara</string>
+    <string name="preview_content_description">Imagem da câmara</string>
     <string name="preview_hint">Perfil lateral • corpo inteiro visível</string>
     <string name="current_phase">Fase atual</string>
     <string name="knee_angle_label">Ângulo do joelho</string>
@@ -85,33 +93,29 @@ Esta versão foi pensada para ser simples, demonstrável e coerente com os requi
     <string name="depth_value">%1$d%%</string>
 
     <string name="state_waiting">À espera</string>
-    <string name="state_waiting_human">À espera de corpo humano</string>
-    <string name="state_stabilizing">A estabilizar deteção</string>
+    <string name="state_waiting_human">À espera de pessoa</string>
+    <string name="state_stabilizing">A estabilizar</string>
     <string name="state_permission_needed">Permissão necessária</string>
     <string name="state_camera_error">Erro de câmara</string>
     <string name="state_phone_tilted">Telemóvel inclinado</string>
     <string name="state_body_incomplete">Corpo incompleto</string>
-    <string name="state_ready">Enquadramento OK</string>
+    <string name="state_ready">Enquadramento correto</string>
     <string name="state_descending">A descer</string>
-    <string name="state_bottom">Profundidade OK</string>
+    <string name="state_bottom">Profundidade atingida</string>
     <string name="state_rising">A subir</string>
     <string name="state_rep_completed">Repetição válida</string>
 
-    <string name="presets_title">Presets rápidos</string>
+    <string name="presets_title">Modos rápidos</string>
     <string name="preset_permissive">Permissivo</string>
     <string name="preset_normal">Normal</string>
     <string name="preset_strict">Exigente</string>
-    <string name="preset_status_permissive">Preset ativo: permissivo</string>
-    <string name="preset_status_normal">Preset ativo: normal</string>
-    <string name="preset_status_strict">Preset ativo: exigente</string>
+    <string name="preset_status_permissive">Modo atual: permissivo</string>
+    <string name="preset_status_normal">Modo atual: normal</string>
+    <string name="preset_status_strict">Modo atual: exigente</string>
     <string name="manual_adjustment">Ajuste manual ativo.</string>
 
     <string name="info_dialog_title">Sobre a aplicação</string>
-    <string name="info_dialog_body">Objetivo: apoiar o enquadramento corporal e a análise básica de agachamentos em vista lateral.
-
-Como funciona: usa o sensor Rotation Vector para verificar a inclinação do telemóvel, CameraX para capturar a imagem em tempo real e ML Kit Pose Detection para estimar a pose e calcular o progresso do agachamento.
-
-Limitações: a análise depende de boa luz, corpo inteiro visível e posição lateral. Esta app é experimental e não substitui avaliação profissional.</string>
-    <string name="review_intro">Ver introdução</string>
+    <string name="info_dialog_body">Objetivo\nApoiar o enquadramento corporal e a análise básica de agachamentos em vista lateral.\n\nComo funciona\n• Rotation Vector verifica a inclinação do telemóvel.\n• CameraX mostra a imagem em tempo real.\n• ML Kit Pose Detection estima a pose e acompanha o movimento.\n\nPara melhores resultados\n• Mostra o corpo inteiro.\n• Mantém uma vista lateral.\n• Usa boa iluminação.\n• Endireita o telemóvel.\n\nLimitações\nEsta aplicação é um apoio experimental e não substitui avaliação profissional.</string>
+    <string name="review_intro">Rever introdução</string>
     <string name="close_label">Fechar</string>
 </resources>

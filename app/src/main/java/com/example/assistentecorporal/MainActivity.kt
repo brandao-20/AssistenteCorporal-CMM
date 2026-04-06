@@ -2,6 +2,7 @@ package com.example.assistentecorporal
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.assistentecorporal.databinding.ActivityMainBinding
 
@@ -11,6 +12,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appPreferences: AppPreferences
     private var currentSlide = 0
     private val totalSlides = 3
+    private var forceShowIntro = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
         appPreferences = AppPreferences(this)
 
-        val forceShowIntro = intent.getBooleanExtra(EXTRA_FORCE_SHOW_INTRO, false)
+        forceShowIntro = intent.getBooleanExtra(EXTRA_FORCE_SHOW_INTRO, false)
         if (appPreferences.isIntroSeen() && !forceShowIntro) {
             binding.btnSkip.text = getString(R.string.open_analysis_direct)
         }
@@ -70,6 +72,20 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.start_analysis)
         } else {
             getString(R.string.next)
+        }
+
+        binding.btnSkip.visibility = if (currentSlide == totalSlides - 1) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
+
+        if (binding.btnSkip.visibility == View.VISIBLE) {
+            binding.btnSkip.text = if (appPreferences.isIntroSeen() && !forceShowIntro) {
+                getString(R.string.open_analysis_direct)
+            } else {
+                getString(R.string.skip_intro)
+            }
         }
     }
 

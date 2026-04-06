@@ -48,6 +48,7 @@ class AnalysisActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, R.string.camera_permission_required, Toast.LENGTH_LONG).show()
             binding.tvAppStatus.text = getString(R.string.camera_permission_required)
+            binding.tvFeedback.text = getString(R.string.feedback_camera_permission_required)
             updateStateChip(
                 stateText = getString(R.string.state_permission_needed),
                 backgroundRes = R.drawable.bg_state_error,
@@ -141,16 +142,16 @@ class AnalysisActivity : AppCompatActivity() {
     }
 
     private fun renderBaselineValues() {
-        binding.tvAppStatus.text = getString(R.string.analysis_idle)
-        binding.tvFeedback.text = getString(R.string.feedback_ready)
+        binding.tvAppStatus.text = getString(R.string.analysis_waiting_human)
+        binding.tvFeedback.text = getString(R.string.feedback_waiting_human)
         binding.tvOrientation.text = getString(R.string.orientation_initial)
         binding.tvVisibleSide.text = getString(R.string.visible_side_initial)
-        binding.tvStageChip.text = getString(R.string.stage_ready)
+        binding.tvStageChip.text = getString(R.string.stage_waiting)
         binding.tvAngleValue.text = getString(R.string.value_unknown)
         binding.tvCounter.text = getString(R.string.counter_value, feedbackEngine.repCount)
         binding.tvDepthValue.text = getString(R.string.depth_value, 0)
         binding.progressDepth.progress = 0
-        applyStageChipStyle(label = getString(R.string.stage_ready), highlight = false)
+        applyStageChipStyle(stage = AnalysisStage.WAITING, highlight = false)
     }
 
     private fun ensureCameraPermissionAndStart() {
@@ -193,10 +194,11 @@ class AnalysisActivity : AppCompatActivity() {
             try {
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
-                binding.tvAppStatus.text = getString(R.string.analysis_running)
+                binding.tvAppStatus.text = getString(R.string.analysis_waiting_human)
                 refreshUiState()
             } catch (_: Exception) {
                 binding.tvAppStatus.text = getString(R.string.camera_start_error)
+                binding.tvFeedback.text = getString(R.string.feedback_camera_start_error)
                 Toast.makeText(this, getString(R.string.camera_start_error), Toast.LENGTH_SHORT).show()
                 updateStateChip(
                     stateText = getString(R.string.state_camera_error),
@@ -219,11 +221,13 @@ class AnalysisActivity : AppCompatActivity() {
     }
 
     private fun updateCameraButtonLabel() {
-        binding.btnSwitchCamera.text = if (lensFacing == CameraSelector.LENS_FACING_BACK) {
-            getString(R.string.switch_to_front)
+        val labelRes = if (lensFacing == CameraSelector.LENS_FACING_BACK) {
+            R.string.switch_to_front
         } else {
-            getString(R.string.switch_to_back)
+            R.string.switch_to_back
         }
+        binding.tvSwitchCameraLabel.text = getString(labelRes)
+        binding.btnSwitchCamera.contentDescription = getString(labelRes)
     }
 
     private fun syncThresholdViews() {
@@ -286,15 +290,17 @@ class AnalysisActivity : AppCompatActivity() {
         latestAnalysisResult = result
 
         binding.tvCounter.text = getString(R.string.counter_value, result.repCount)
-        binding.tvVisibleSide.text = getString(R.string.visible_side_value, result.visibleSideLabel)
-        binding.tvFeedback.text = result.feedback
+        binding.tvVisibleSide.text = getString(
+            R.string.visible_side_value,
+            getString(visibleSideLabelRes(result.visibleSide))
+        )
+        binding.tvFeedback.text = getString(feedbackTextRes(result.feedback))
         binding.tvAngleValue.text = result.kneeAngle?.let { getString(R.string.angle_value_only, it) }
             ?: getString(R.string.value_unknown)
         binding.tvDepthValue.text = getString(R.string.depth_value, result.depthPercent)
         binding.progressDepth.progress = result.depthPercent
-        applyStageChipStyle(result.stageLabel, result.justCompletedRep)
-
-        binding.tvAppStatus.text = result.appStatus
+        applyStageChipStyle(result.stage, result.justCompletedRep)
+        binding.tvAppStatus.text = getString(statusTextRes(result.uiState))
 
         if (result.justCompletedRep) {
             celebrateCompletedRep()
@@ -324,31 +330,20 @@ class AnalysisActivity : AppCompatActivity() {
                 )
             }
 
-            result?.poseDetected == true -> {
-                val stateText = when (result.stageLabel) {
-                    getString(R.string.stage_ready) -> getString(R.string.state_ready)
-                    getString(R.string.stage_descending) -> getString(R.string.state_descending)
-                    getString(R.string.stage_bottom) -> getString(R.string.state_bottom)
-                    getString(R.string.stage_rising) -> getString(R.string.state_rising)
-                    else -> getString(R.string.state_ready)
+            result != null -> {
+                val (backgroundRes, textColorRes) = when (result.uiState) {
+                    AnalysisUiState.WAITING_HUMAN -> R.drawable.bg_state_error to R.color.error
+                    AnalysisUiState.STABILIZING -> R.drawable.bg_state_warning to R.color.warning
+                    AnalysisUiState.READY -> R.drawable.bg_state_success to R.color.success
+                    AnalysisUiState.DESCENDING -> R.drawable.bg_state_warning to R.color.warning
+                    AnalysisUiState.BOTTOM -> R.drawable.bg_state_success to R.color.success
+                    AnalysisUiState.RISING -> R.drawable.bg_state_warning to R.color.warning
+                    AnalysisUiState.REP_COMPLETED -> R.drawable.bg_state_success to R.color.success
                 }
                 updateStateChip(
-                    stateText = stateText,
-                    backgroundRes = R.drawable.bg_state_success,
-                    textColorRes = R.color.success
-                )
-            }
-
-            result?.poseDetected == false -> {
-                val stateText = when {
-                    result.appStatus.contains("estabilizar", ignoreCase = true) -> getString(R.string.state_stabilizing)
-                    result.appStatus.contains("humano", ignoreCase = true) -> getString(R.string.state_waiting_human)
-                    else -> getString(R.string.state_body_incomplete)
-                }
-                updateStateChip(
-                    stateText = stateText,
-                    backgroundRes = R.drawable.bg_state_error,
-                    textColorRes = R.color.error
+                    stateText = getString(stateChipRes(result.uiState)),
+                    backgroundRes = backgroundRes,
+                    textColorRes = textColorRes
                 )
             }
 
@@ -362,26 +357,71 @@ class AnalysisActivity : AppCompatActivity() {
         }
     }
 
+    private fun stateChipRes(uiState: AnalysisUiState): Int = when (uiState) {
+        AnalysisUiState.WAITING_HUMAN -> R.string.state_waiting_human
+        AnalysisUiState.STABILIZING -> R.string.state_stabilizing
+        AnalysisUiState.READY -> R.string.state_ready
+        AnalysisUiState.DESCENDING -> R.string.state_descending
+        AnalysisUiState.BOTTOM -> R.string.state_bottom
+        AnalysisUiState.RISING -> R.string.state_rising
+        AnalysisUiState.REP_COMPLETED -> R.string.state_rep_completed
+    }
+
+    private fun statusTextRes(uiState: AnalysisUiState): Int = when (uiState) {
+        AnalysisUiState.WAITING_HUMAN -> R.string.analysis_waiting_human
+        AnalysisUiState.STABILIZING -> R.string.analysis_stabilizing
+        AnalysisUiState.READY -> R.string.analysis_human_detected
+        AnalysisUiState.DESCENDING -> R.string.analysis_human_detected
+        AnalysisUiState.BOTTOM -> R.string.analysis_human_detected
+        AnalysisUiState.RISING -> R.string.analysis_human_detected
+        AnalysisUiState.REP_COMPLETED -> R.string.analysis_human_detected
+    }
+
+    private fun feedbackTextRes(feedback: AnalysisFeedback): Int = when (feedback) {
+        AnalysisFeedback.WAITING_HUMAN -> R.string.feedback_waiting_human
+        AnalysisFeedback.STABILIZING -> R.string.feedback_stabilizing
+        AnalysisFeedback.READY -> R.string.feedback_ready
+        AnalysisFeedback.DESCENDING -> R.string.feedback_descending
+        AnalysisFeedback.BOTTOM -> R.string.feedback_bottom
+        AnalysisFeedback.RISING -> R.string.feedback_rising
+        AnalysisFeedback.REP_COMPLETED -> R.string.feedback_rep_completed
+    }
+
+    private fun visibleSideLabelRes(visibleSide: VisibleSide): Int = when (visibleSide) {
+        VisibleSide.UNKNOWN -> R.string.visible_side_unknown
+        VisibleSide.LEFT -> R.string.side_left
+        VisibleSide.RIGHT -> R.string.side_right
+    }
+
     private fun updateStateChip(stateText: String, backgroundRes: Int, textColorRes: Int) {
         binding.tvStatusChip.text = stateText
         binding.tvStatusChip.setBackgroundResource(backgroundRes)
         binding.tvStatusChip.setTextColor(ContextCompat.getColor(this, textColorRes))
     }
 
-    private fun applyStageChipStyle(label: String, highlight: Boolean) {
-        binding.tvStageChip.text = label
+    private fun applyStageChipStyle(stage: AnalysisStage, highlight: Boolean) {
+        binding.tvStageChip.text = getString(stageLabelRes(stage))
 
         val (backgroundRes, textColorRes) = when {
             highlight -> R.drawable.bg_state_success to R.color.success
-            label == getString(R.string.stage_bottom) -> R.drawable.bg_state_success to R.color.success
-            label == getString(R.string.stage_descending) || label == getString(R.string.stage_rising) -> {
+            stage == AnalysisStage.BOTTOM -> R.drawable.bg_state_success to R.color.success
+            stage == AnalysisStage.DESCENDING || stage == AnalysisStage.RISING -> {
                 R.drawable.bg_state_warning to R.color.warning
             }
+            stage == AnalysisStage.READY -> R.drawable.bg_state_neutral to R.color.primary_dark
             else -> R.drawable.bg_state_neutral to R.color.primary_dark
         }
 
         binding.tvStageChip.setBackgroundResource(backgroundRes)
         binding.tvStageChip.setTextColor(ContextCompat.getColor(this, textColorRes))
+    }
+
+    private fun stageLabelRes(stage: AnalysisStage): Int = when (stage) {
+        AnalysisStage.WAITING -> R.string.stage_waiting
+        AnalysisStage.READY -> R.string.stage_ready
+        AnalysisStage.DESCENDING -> R.string.stage_descending
+        AnalysisStage.BOTTOM -> R.string.stage_bottom
+        AnalysisStage.RISING -> R.string.stage_rising
     }
 
     private fun celebrateCompletedRep() {
@@ -458,6 +498,5 @@ private enum class ThresholdPreset(
 ) {
     PERMISSIVE(120, 155, R.string.preset_status_permissive),
     NORMAL(110, 160, R.string.preset_status_normal),
-    STRICT(100, 165, R.string.preset_status_strict);
-
+    STRICT(100, 165, R.string.preset_status_strict)
 }

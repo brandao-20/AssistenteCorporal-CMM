@@ -18,21 +18,25 @@ class GuidanceOverlayView @JvmOverloads constructor(
 
     private val framePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        color = Color.argb(190, 255, 255, 255)
-        strokeWidth = dp(2.5f)
+        color = Color.argb(150, 255, 255, 255)
+        strokeWidth = dp(2.2f)
         pathEffect = DashPathEffect(floatArrayOf(dp(12f), dp(10f)), 0f)
     }
 
     private val guidePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        color = Color.argb(225, 255, 255, 255)
-        strokeWidth = dp(3f)
+        color = Color.argb(120, 255, 255, 255)
+        strokeWidth = dp(2.6f)
         strokeCap = Paint.Cap.ROUND
+        strokeJoin = Paint.Join.ROUND
     }
 
-    private val accentPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-        color = Color.argb(210, 255, 255, 255)
+    private val ghostPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        color = Color.argb(105, 255, 255, 255)
+        strokeWidth = dp(3.2f)
+        strokeCap = Paint.Cap.ROUND
+        strokeJoin = Paint.Join.ROUND
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -50,55 +54,41 @@ class GuidanceOverlayView @JvmOverloads constructor(
         val floorY = height * 0.82f
         val guideX = width * 0.42f
         val centerX = width * 0.53f
-        val bodyHeight = min(height * 0.55f, width * 0.85f)
+        val bodyHeight = min(height * 0.55f, width * 0.82f)
         val topY = floorY - bodyHeight
 
         canvas.drawLine(guideX, topY, guideX, floorY, guidePaint)
         canvas.drawLine(width * 0.22f, floorY, width * 0.78f, floorY, guidePaint)
 
-        val headRadius = dp(20f)
-        canvas.drawCircle(centerX, topY + headRadius * 1.15f, headRadius, guidePaint)
+        val headRadius = dp(18f)
+        canvas.drawCircle(centerX, topY + headRadius * 1.2f, headRadius, ghostPaint)
 
         val neckX = centerX
-        val neckY = topY + headRadius * 2.4f
-        val hipX = width * 0.5f
-        val hipY = topY + bodyHeight * 0.47f
-        val kneeX = width * 0.57f
-        val kneeY = topY + bodyHeight * 0.70f
-        val ankleX = width * 0.52f
-        val ankleY = floorY
+        val neckY = topY + headRadius * 2.45f
+        val torsoBottomX = width * 0.50f
+        val torsoBottomY = topY + bodyHeight * 0.48f
+        val frontShoulderX = width * 0.59f
+        val frontShoulderY = neckY + bodyHeight * 0.015f
+        val frontHandX = width * 0.69f
+        val frontHandY = topY + bodyHeight * 0.45f
+        val frontKneeX = width * 0.57f
+        val frontKneeY = topY + bodyHeight * 0.70f
+        val frontAnkleX = width * 0.52f
+        val frontAnkleY = floorY
 
-        val shoulderFrontX = width * 0.60f
-        val shoulderFrontY = neckY + bodyHeight * 0.02f
-        val elbowX = width * 0.68f
-        val elbowY = topY + bodyHeight * 0.40f
-        val handX = width * 0.73f
-        val handY = topY + bodyHeight * 0.47f
-
-        val skeleton = Path().apply {
+        val ghostPath = Path().apply {
             moveTo(neckX, neckY)
-            lineTo(hipX, hipY)
-            moveTo(neckX, neckY)
-            lineTo(shoulderFrontX, shoulderFrontY)
-            lineTo(elbowX, elbowY)
-            lineTo(handX, handY)
-            moveTo(hipX, hipY)
-            lineTo(kneeX, kneeY)
-            lineTo(ankleX, ankleY)
-        }
-        canvas.drawPath(skeleton, guidePaint)
+            lineTo(torsoBottomX, torsoBottomY)
 
-        listOf(
-            Pair(neckX, neckY),
-            Pair(hipX, hipY),
-            Pair(kneeX, kneeY),
-            Pair(ankleX, ankleY),
-            Pair(shoulderFrontX, shoulderFrontY),
-            Pair(elbowX, elbowY),
-            Pair(handX, handY)
-        ).forEach { (x, y) ->
-            canvas.drawCircle(x, y, dp(4f), accentPaint)
+            moveTo(neckX, neckY)
+            lineTo(frontShoulderX, frontShoulderY)
+            lineTo(frontHandX, frontHandY)
+
+            moveTo(torsoBottomX, torsoBottomY)
+            lineTo(frontKneeX, frontKneeY)
+            lineTo(frontAnkleX, frontAnkleY)
         }
+        canvas.drawPath(ghostPath, ghostPaint)
     }
 
     private fun dp(value: Float): Float = value * resources.displayMetrics.density

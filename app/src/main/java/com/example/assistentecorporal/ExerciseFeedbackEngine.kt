@@ -73,11 +73,12 @@ class ExerciseFeedbackEngine(
             stableValidFrames = 0
 
             if (stablePoseAccepted && stableInvalidFrames < INVALID_FRAMES_TO_STOP) {
-                return lastStableResult?.copy(justCompletedRep = false) ?: invalidResult(
-                    appStatus = STATUS_WAITING_HUMAN,
-                    feedback = FEEDBACK_WAITING_HUMAN,
-                    visibleSideLabel = fixedSide?.toLabel(isFrontCamera) ?: "Indefinido"
-                )
+                return lastStableResult?.copy(justCompletedRep = false)
+                    ?: invalidResult(
+                        uiState = AnalysisUiState.WAITING_HUMAN,
+                        feedback = AnalysisFeedback.WAITING_HUMAN,
+                        visibleSide = fixedSide?.toVisibleSide() ?: VisibleSide.UNKNOWN
+                    )
             }
 
             stablePoseAccepted = false
@@ -92,9 +93,9 @@ class ExerciseFeedbackEngine(
             standingHipBaselineY = null
 
             return invalidResult(
-                appStatus = STATUS_WAITING_HUMAN,
-                feedback = FEEDBACK_WAITING_HUMAN,
-                visibleSideLabel = "Indefinido"
+                uiState = AnalysisUiState.WAITING_HUMAN,
+                feedback = AnalysisFeedback.WAITING_HUMAN,
+                visibleSide = VisibleSide.UNKNOWN
             )
         }
 
@@ -104,9 +105,9 @@ class ExerciseFeedbackEngine(
         if (!stablePoseAccepted) {
             if (stableValidFrames < VALID_FRAMES_TO_START) {
                 return invalidResult(
-                    appStatus = STATUS_STABILIZING,
-                    feedback = FEEDBACK_STABILIZING,
-                    visibleSideLabel = rawCandidate.side.toLabel(isFrontCamera)
+                    uiState = AnalysisUiState.STABILIZING,
+                    feedback = AnalysisFeedback.STABILIZING,
+                    visibleSide = rawCandidate.side.toVisibleSide()
                 )
             }
             stablePoseAccepted = true
@@ -114,7 +115,7 @@ class ExerciseFeedbackEngine(
         }
 
         val activeCandidate = resolveStableSide(rawCandidate, left, right) ?: rawCandidate
-        val visibleSideLabel = activeCandidate.side.toLabel(isFrontCamera)
+        val visibleSide = activeCandidate.side.toVisibleSide()
 
         val bodyHeight = distance(activeCandidate.shoulder, activeCandidate.ankle)
         updateStandingBaseline(activeCandidate.hip.y, bodyHeight)
@@ -136,20 +137,23 @@ class ExerciseFeedbackEngine(
 
         val now = System.currentTimeMillis()
         var justCompletedRep = false
-        val uiStage: UiStage
-        val feedback: String
+        val stage: AnalysisStage
+        val feedback: AnalysisFeedback
+        val uiState: AnalysisUiState
 
         when {
             kneeAngle <= downThreshold && hipDropPx >= downHipDropRequired -> {
                 stableDownFrames += 1
                 if (stableDownFrames >= REQUIRED_STABLE_DOWN_FRAMES) {
                     trackingStage = TrackingStage.DOWN
-                    uiStage = UiStage.BOTTOM
-                    feedback = FEEDBACK_BOTTOM
+                    stage = AnalysisStage.BOTTOM
+                    feedback = AnalysisFeedback.BOTTOM
+                    uiState = AnalysisUiState.BOTTOM
                 } else {
                     trackingStage = TrackingStage.DESCENDING
-                    uiStage = UiStage.DESCENDING
-                    feedback = FEEDBACK_DESCENDING
+                    stage = AnalysisStage.DESCENDING
+                    feedback = AnalysisFeedback.DESCENDING
+                    uiState = AnalysisUiState.DESCENDING
                 }
             }
 
@@ -161,38 +165,42 @@ class ExerciseFeedbackEngine(
                 }
                 trackingStage = TrackingStage.READY
                 stableDownFrames = 0
-                uiStage = UiStage.RISING
-                feedback = FEEDBACK_REP_COMPLETED
+                stage = AnalysisStage.RISING
+                feedback = AnalysisFeedback.REP_COMPLETED
+                uiState = AnalysisUiState.REP_COMPLETED
             }
 
             trackingStage == TrackingStage.DOWN -> {
-                uiStage = UiStage.RISING
-                feedback = FEEDBACK_RISING
+                stage = AnalysisStage.RISING
+                feedback = AnalysisFeedback.RISING
+                uiState = AnalysisUiState.RISING
             }
 
             kneeAngle < upThreshold && hipDropPx >= descendHipDropRequired -> {
                 trackingStage = TrackingStage.DESCENDING
                 stableDownFrames = 0
-                uiStage = UiStage.DESCENDING
-                feedback = FEEDBACK_DESCENDING
+                stage = AnalysisStage.DESCENDING
+                feedback = AnalysisFeedback.DESCENDING
+                uiState = AnalysisUiState.DESCENDING
             }
 
             else -> {
                 trackingStage = TrackingStage.READY
                 stableDownFrames = 0
-                uiStage = UiStage.READY
-                feedback = FEEDBACK_READY
+                stage = AnalysisStage.READY
+                feedback = AnalysisFeedback.READY
+                uiState = AnalysisUiState.READY
             }
         }
 
         val result = AnalysisResult(
             poseDetected = true,
             repCount = repCount,
-            stageLabel = uiStage.label,
+            stage = stage,
             feedback = feedback,
-            appStatus = STATUS_HUMAN_DETECTED,
+            uiState = uiState,
             kneeAngle = kneeAngle,
-            visibleSideLabel = visibleSideLabel,
+            visibleSide = visibleSide,
             depthPercent = depthPercent,
             justCompletedRep = justCompletedRep
         )
@@ -202,18 +210,18 @@ class ExerciseFeedbackEngine(
     }
 
     private fun invalidResult(
-        appStatus: String,
-        feedback: String,
-        visibleSideLabel: String
+        uiState: AnalysisUiState,
+        feedback: AnalysisFeedback,
+        visibleSide: VisibleSide
     ): AnalysisResult {
         return AnalysisResult(
             poseDetected = false,
             repCount = repCount,
-            stageLabel = UiStage.READY.label,
+            stage = AnalysisStage.WAITING,
             feedback = feedback,
-            appStatus = appStatus,
+            uiState = uiState,
             kneeAngle = null,
-            visibleSideLabel = visibleSideLabel,
+            visibleSide = visibleSide,
             depthPercent = 0,
             justCompletedRep = false
         )
@@ -381,7 +389,6 @@ class ExerciseFeedbackEngine(
         }
     }
 
-
     private fun updateStandingBaseline(currentHipY: Float, bodyHeight: Float) {
         val currentBaseline = standingHipBaselineY
         val shouldRefreshBaseline = trackingStage == TrackingStage.READY &&
@@ -482,13 +489,6 @@ class ExerciseFeedbackEngine(
         DOWN
     }
 
-    private enum class UiStage(val label: String) {
-        READY("Pronto"),
-        DESCENDING("A descer"),
-        BOTTOM("Em baixo"),
-        RISING("A subir")
-    }
-
     companion object {
         private const val MIN_SIDE_CONFIDENCE = 0.68f
         private const val MIN_HEAD_CONFIDENCE = 0.45f
@@ -520,19 +520,41 @@ class ExerciseFeedbackEngine(
         private const val BASELINE_REFRESH_MARGIN_DEGREES = 3
         private const val MIN_HIP_DROP_DESCENDING_RATIO = 0.04f
         private const val MIN_HIP_DROP_DOWN_RATIO = 0.08f
-
-        private const val STATUS_WAITING_HUMAN = "Corpo humano não detetado."
-        private const val STATUS_STABILIZING = "A estabilizar deteção humana."
-        private const val STATUS_HUMAN_DETECTED = "Corpo humano válido detetado."
-
-        private const val FEEDBACK_WAITING_HUMAN = "Mostra uma pessoa real com o corpo inteiro de perfil para iniciar a análise."
-        private const val FEEDBACK_STABILIZING = "Mantém-te imóvel por um momento para estabilizar a análise."
-        private const val FEEDBACK_READY = "Posição pronta. Inicia o agachamento de perfil."
-        private const val FEEDBACK_DESCENDING = "Desce mais para atingir a profundidade alvo."
-        private const val FEEDBACK_BOTTOM = "Boa profundidade. Agora sobe para completar."
-        private const val FEEDBACK_RISING = "Sobe para completar o agachamento."
-        private const val FEEDBACK_REP_COMPLETED = "Repetição válida. Excelente controlo."
     }
+}
+
+enum class AnalysisUiState {
+    WAITING_HUMAN,
+    STABILIZING,
+    READY,
+    DESCENDING,
+    BOTTOM,
+    RISING,
+    REP_COMPLETED
+}
+
+enum class AnalysisFeedback {
+    WAITING_HUMAN,
+    STABILIZING,
+    READY,
+    DESCENDING,
+    BOTTOM,
+    RISING,
+    REP_COMPLETED
+}
+
+enum class AnalysisStage {
+    WAITING,
+    READY,
+    DESCENDING,
+    BOTTOM,
+    RISING
+}
+
+enum class VisibleSide {
+    UNKNOWN,
+    LEFT,
+    RIGHT
 }
 
 private enum class BodySide(
@@ -554,22 +576,20 @@ private enum class BodySide(
         PoseLandmark.RIGHT_ANKLE
     );
 
-    fun toLabel(isFrontCamera: Boolean): String {
-        return when (this) {
-            LEFT -> if (isFrontCamera) "Esquerdo" else "Esquerdo"
-            RIGHT -> if (isFrontCamera) "Direito" else "Direito"
-        }
+    fun toVisibleSide(): VisibleSide = when (this) {
+        LEFT -> VisibleSide.LEFT
+        RIGHT -> VisibleSide.RIGHT
     }
 }
 
 data class AnalysisResult(
     val poseDetected: Boolean,
     val repCount: Int,
-    val stageLabel: String,
-    val feedback: String,
-    val appStatus: String,
+    val stage: AnalysisStage,
+    val feedback: AnalysisFeedback,
+    val uiState: AnalysisUiState,
     val kneeAngle: Int? = null,
-    val visibleSideLabel: String = "Indefinido",
+    val visibleSide: VisibleSide = VisibleSide.UNKNOWN,
     val depthPercent: Int = 0,
     val justCompletedRep: Boolean = false
 )
